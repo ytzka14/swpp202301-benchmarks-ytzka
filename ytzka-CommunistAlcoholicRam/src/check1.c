@@ -1,5 +1,8 @@
 #include <inttypes.h>
+#include <stdint.h>
 #include <stdlib.h>
+
+#include <stdio.h>
 
 uint64_t read();
 void write(uint64_t);
@@ -47,9 +50,10 @@ int logical(int x, int y) {
 }
 
 int gotoscript() {
+  int x1, x2, cont;
 goto1:
-  int x1 = read();
-  int x2 = read();
+  x1 = read();
+  x2 = read();
 goto2:
   if (x1 > x2)
     x1 -= x2;
@@ -59,10 +63,11 @@ goto2:
     goto goto3;
   goto goto2;
 goto3:
-  bool cont = read();
-  if (cont)
+  cont = read();
+  if (cont) {
+    write(x1);
     goto goto1;
-  else
+  } else
     goto goto4;
 goto4:
   return x1;
@@ -74,12 +79,12 @@ int irrelevant(int a, int b) {
   int z3 = logical(b, a);
   int z4 = logical(b, b);
   int z5 = z1 + z2 + z3 + z4;
-  bool flag = false;
+  int flag = 0;
   if (z5 != z1) {
     if (z5 != z2) {
       if (z5 != z3) {
         if (z5 != z4) {
-          flag = true;
+          flag = 1;
           int nores1 = int_sum_i7(a, 2, a, a, b, b, 0, b);
         }
         int nores2 = int_sum_i7(a, a, b, 0, a, 5, b, b);
@@ -94,7 +99,7 @@ int irrelevant(int a, int b) {
     return 0xdeadbeef;
 }
 
-int longblock(int n) {
+int longblock() {
   uint64_t *arr = (uint64_t *)malloc(50 * sizeof(uint64_t));
   uint64_t *proparr = (uint64_t *)malloc(50 * sizeof(uint64_t));
   arr[0] = 7;   // alabama
@@ -253,7 +258,7 @@ int longblock(int n) {
 }
 
 void matmul(uint64_t *mat, int n) {
-  uint64_t *resmat = (uint64_t *)(5 * 5 * sizeof(uint64_t));
+  uint64_t *resmat = (uint64_t *)malloc(25 * sizeof(uint64_t));
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       resmat[i * 5 + j] = (i == j ? 1 : 0);
@@ -277,4 +282,31 @@ void matmul(uint64_t *mat, int n) {
   }
 }
 
-int main() { return 0; }
+int main() {
+  write(gotoscript());
+  int irrel1 = read();
+  int irrel2 = read();
+  write(irrelevant(irrel1, irrel2));
+  write(longblock());
+
+  uint64_t *mat = (uint64_t *)malloc(25 * sizeof(uint64_t));
+  for (int i = 0; i < 25; i++) {
+    mat[i] = read();
+  }
+  matmul(mat, 2);
+  for (int i = 0; i < 25; i++) {
+    write(mat[i]);
+  }
+  return 0;
+}
+
+uint64_t read() {
+  uint64_t x;
+  scanf("%llu", &x);
+  return x;
+}
+
+void write(uint64_t x) {
+  printf("%llu\n", x);
+  return;
+}
